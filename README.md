@@ -1,6 +1,6 @@
 ## Todo
-[ ] support multilingual review
-[ ] support input: keyword / output: paper reviews related to keyword
+- [ ] support multilingual review
+- [ ] support input: keyword / output: paper reviews related to keyword
 
 # Paper Reviewer
 
