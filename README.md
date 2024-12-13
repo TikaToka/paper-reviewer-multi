@@ -53,6 +53,7 @@ usage: collect.py [-h] [--arxiv-id ARXIV_ID] [--workers WORKERS]
                   [--use-upstage] [--stop-at-no-html] 
                   [--known-affiliations-path KNOWN_AFFILIATIONS_PATH]
                   [--known-categories-path KNOWN_CATEGORIES_PATH]
+                  [--lang LOCALE]
 
 options:
   -h, --help            show this help message and exit
@@ -64,6 +65,7 @@ options:
                         Path to known affiliations
   --known-categories-path KNOWN_CATEGORIES_PATH
                         Path to known categories
+  --lang LOCALE        locale
 ```
 
 To minimize the cost, it is recommended to run the `collect.py` script with `--stop-at-no-html` option. This will make sure to run the workflow on the paper that is its dedicated HTML page(arXiv's experimental HTML page). 
