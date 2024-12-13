@@ -51,16 +51,7 @@ def parse_args():
     parser.add_argument('--known-affiliations-path', type=str, default='configs/known_affiliations.txt', help='Path to known affiliations')
     parser.add_argument('--known-categories-path', type=str, default='configs/known_categories.json', help='Path to known categories')
     parser.add_argument('--voice-synthesis', type=str, default=None, choices=['vertexai', 'local'], help='Voice synthesis service to use')
-    parser.add_argument('--lang', type=str, default='en-US', choices = [
-    'en-US', 'en-GB', 'ko-KR', 'ja-JP', 'zh-CN', 'zh-TW', 'zh-HK', 'zh-SG',
-    'es-ES', 'es-MX', 'es-AR', 'es-CO', 'fr-FR', 'fr-CA', 'de-DE', 'de-AT',
-    'de-CH', 'it-IT', 'pt-PT', 'pt-BR', 'ru-RU', 'ar-SA', 'hi-IN', 'bn-BD',
-    'pa-IN', 'jv-ID', 'vi-VN', 'th-TH', 'tr-TR', 'pl-PL', 'nl-NL', 'sv-SE',
-    'no-NO', 'da-DK', 'fi-FI', 'cs-CZ', 'el-GR', 'he-IL', 'id-ID', 'ms-MY',
-    'ro-RO', 'hu-HU', 'sk-SK', 'uk-UA', 'sr-RS', 'bg-BG', 'hr-HR', 'lt-LT',
-    'lv-LV', 'et-EE', 'sl-SI', 'fa-IR', 'ur-PK', 'ta-IN', 'te-IN', 'ml-IN',
-    'kn-IN', 'mr-IN', 'gu-IN', 'af-ZA', 'sw-KE', 'ta-SG'],
-    help='language to use, use locale') # added
+    parser.add_argument('--lang', type=str, default='ko-KR', help='language to use, use locale') # added
     # parser.add_argument('--keyword', type=str, help='keyword to curate papers') # to be added
     return parser.parse_args()
 
