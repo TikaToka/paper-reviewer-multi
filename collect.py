@@ -41,8 +41,6 @@ def get_arxiv_ids(keyword, start_date, end_date, max_results=10):
 
     return arxiv_ids
 
-if __name__ == "__main__":
-    main()
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -140,11 +138,11 @@ async def main(args):
         # 5. associate each figure and table with description
         print(f"Associating each figure with relevant information")
         if not use_html:
-            association_figure_results = await enrich_description_from_images(figure_paths, pdf_file_in_gemini, args.workers, "figure")
-            association_table_results = await enrich_description_from_images(table_paths, pdf_file_in_gemini, args.workers, "table")
+            association_figure_results = await enrich_description_from_images(figure_paths, pdf_file_in_gemini, args.workers, "figure", args.lang)
+            association_table_results = await enrich_description_from_images(table_paths, pdf_file_in_gemini, args.workers, "table", args.lang)
         else:
-            association_figure_results = await enrich_description_from_html(figures, pdf_file_in_gemini, args.workers, "figure")
-            association_table_results = await enrich_description_from_html(tables, pdf_file_in_gemini, args.workers, "table")
+            association_figure_results = await enrich_description_from_html(figures, pdf_file_in_gemini, args.workers, "figure", args.lang)
+            association_table_results = await enrich_description_from_html(tables, pdf_file_in_gemini, args.workers, "table", args.lang)
 
         # 6. save the results
         print(f"Saving the figure information")
@@ -204,7 +202,7 @@ async def main(args):
 
         # 10. extract section details from the pdf
         print(f"Extracting section details from the pdf")
-        section_detail_list = await extract_section_details(pdf_file_in_gemini, sections, args.workers)
+        section_detail_list = await extract_section_details(pdf_file_in_gemini, sections, args.workers, args.lang)
 
         for i in range(len(section_detail_list)):
             sections[i]["details"] = section_detail_list[i]

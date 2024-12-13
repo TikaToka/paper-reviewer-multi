@@ -2,6 +2,7 @@ import json
 
 import google.generativeai as genai
 from google.ai.generativelanguage_v1beta.types import content
+from string import Template
 
 from pipeline.utils import prompts
 from configs.gemini_configs import extract_essentials_config
@@ -24,11 +25,11 @@ def ask_gemini_for_essentials(pdf_file_in_gemini, lang):
     )
 
     prompt = prompts["extract_essentials"]["prompt"]
-    rompt = Template(prompt).substitute(
+    prompt = Template(prompt).substitute(
         lang=lang,
     )
     response = chat_session.send_message(prompt)
     return json.loads(response.text)
 
-def extract_essentials(pdf_file_in_gemini):
-    return ask_gemini_for_essentials(pdf_file_in_gemini)
+def extract_essentials(pdf_file_in_gemini, lang):
+    return ask_gemini_for_essentials(pdf_file_in_gemini, lang)

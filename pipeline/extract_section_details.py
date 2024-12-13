@@ -9,7 +9,7 @@ from google.ai.generativelanguage_v1beta.types import content
 from pipeline.utils import prompts
 from configs.gemini_configs import extract_section_details_config
 
-def ask_gemini_for_section_details(pdf_file_in_gemini, section_info):
+def ask_gemini_for_section_details(pdf_file_in_gemini, section_info, lang):
     model = genai.GenerativeModel(
         model_name=extract_section_details_config["model_name"],
         generation_config=extract_section_details_config["generation_config"],
@@ -27,16 +27,16 @@ def ask_gemini_for_section_details(pdf_file_in_gemini, section_info):
     )
 
     prompt = prompts["extract_section_details"]["prompt"]
-    prompt = Template(prompt).substitute(section_title=section_info["heading_title"])
+    prompt = Template(prompt).substitute(section_title=section_info["heading_title"], lang=lang)
     response = chat_session.send_message(prompt)
     return json.loads(response.text)
 
-async def process_section_info(pdf_file_in_gemini, section_info, pbar):
-    section_details = ask_gemini_for_section_details(pdf_file_in_gemini, section_info)
+async def process_section_info(pdf_file_in_gemini, section_info, pbar, lang):
+    section_details = ask_gemini_for_section_details(pdf_file_in_gemini, section_info, lang)
     pbar.update(1)
     return section_details
 
-async def extract_section_details(pdf_file_in_gemini, section_infos, workers):
+async def extract_section_details(pdf_file_in_gemini, section_infos, workers, lang):
     section_detail_list = []
     section_details_tasks = []
 
@@ -44,7 +44,7 @@ async def extract_section_details(pdf_file_in_gemini, section_infos, workers):
     with tqdm(total=len(section_infos)) as pbar:
         async def worker(section_info):
             async with semaphore:
-                return await process_section_info(pdf_file_in_gemini, section_info, pbar)
+                return await process_section_info(pdf_file_in_gemini, section_info, pbar, lang)
 
         section_details_tasks = [worker(section_info) for section_info in section_infos]
         results = await asyncio.gather(*section_details_tasks)

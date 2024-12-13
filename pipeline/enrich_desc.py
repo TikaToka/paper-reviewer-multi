@@ -58,7 +58,7 @@ def ask_gemini_description_from_image(pdf_file_in_gemini, media_path, media_type
     )
 
     prompt = prompts["describe_figure"]["prompt"]
-    prompt = Template(prompt).substitute(type=media_type)
+    prompt = Template(prompt).substitute(type=media_type, lang=lang)
     response = chat_session.send_message(prompt)
     return json.loads(response.text)
 
@@ -90,7 +90,7 @@ async def enrich_description_from_images(media_paths, pdf_file_in_gemini, worker
 
 
 ## HTML
-def ask_gemini_description_from_html(pdf_file_in_gemini, figure, media_type):
+def ask_gemini_description_from_html(pdf_file_in_gemini, figure, media_type, lang):
     generation_config = {
         "temperature": 1,
         "top_p": 0.95,
@@ -131,12 +131,13 @@ def ask_gemini_description_from_html(pdf_file_in_gemini, figure, media_type):
     prompt = Template(prompt).substitute(
         type=media_type,
         caption=figure["caption"],
+        lang=lang
     )
     response = chat_session.send_message(prompt)
     return json.loads(response.text)
 
-async def process_figure_and_table_from_html(media, pdf_file_in_gemini, pbar, media_type):
-    associated_description = ask_gemini_description_from_html(pdf_file_in_gemini, media, media_type)
+async def process_figure_and_table_from_html(media, pdf_file_in_gemini, pbar, media_type, lang):
+    associated_description = ask_gemini_description_from_html(pdf_file_in_gemini, media, media_type, lang)
     pbar.update(1)
     if media_type == "figure":
         return {
@@ -153,7 +154,7 @@ async def process_figure_and_table_from_html(media, pdf_file_in_gemini, pbar, me
             "section": associated_description["section"],
         }
 
-async def enrich_description_from_html(media_list, pdf_file_in_gemini, workers, media_type):
+async def enrich_description_from_html(media_list, pdf_file_in_gemini, workers, media_type, lang):
     association_results = []
     association_tasks = []
 
@@ -161,7 +162,7 @@ async def enrich_description_from_html(media_list, pdf_file_in_gemini, workers, 
     with tqdm(total=len(media_list)) as pbar:
         async def worker(media):
             async with semaphore:
-                return await process_figure_and_table_from_html(media, pdf_file_in_gemini, pbar, media_type)
+                return await process_figure_and_table_from_html(media, pdf_file_in_gemini, pbar, media_type, lang)
 
         association_tasks = [worker(media) for media in media_list]
         results = await asyncio.gather(*association_tasks)

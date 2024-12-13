@@ -9,7 +9,7 @@ from google.ai.generativelanguage_v1beta.types import content
 from pipeline.utils import prompts
 from configs.gemini_configs import reformat_table_config
 
-def ask_gemini_reformat_table(arxiv_id, table, lang):
+def ask_gemini_reformat_table(arxiv_id, table):
     model = genai.GenerativeModel(
         model_name=reformat_table_config["model_name"],
         generation_config=reformat_table_config["generation_config"],
