@@ -18,6 +18,11 @@ if [ -z "$lang" ]; then
   exit 1
 fi
 
+echo "$lang"
+echo "$lang"
+echo "$lang"
+
+
 existing_articles=()
 
 if [ -n "$existing_articles_dir" ]; then
