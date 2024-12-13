@@ -1,4 +1,4 @@
-enrich_description_from_html[extract_tables]
+[extract_tables]
 prompt = """Extract tables from the image. Express the tables in Markdown.
 Becareful with the layout of the tables, sometimes they are very complex.
 
