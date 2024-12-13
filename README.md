@@ -1,3 +1,9 @@
+This repo is a forked version of [this repository](https://github.com/deep-diver/paper-reviewer)
+
+## TODO
+-[x] Multilingual Support
+-[ ] Keyword based curation
+
 # Paper Reviewer
 
 https://github.com/user-attachments/assets/4ee19af5-107e-4ae7-95fe-67f6227eb5b0
