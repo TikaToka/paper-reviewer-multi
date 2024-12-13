@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Check if two arguments are provided
-if [ $# -lt 2 ] || [ $# -gt 4 ]; then
-  echo "Usage: $0 <start_date> <end_date> [<num_threads>] [<existing_articles_dir>]"
-  echo "Example: $0 2024-10-20 2024-10-24 4 /path/to/articles"
+if [ $# -lt 2 ] || [ $# -gt 5 ]; then
+  echo "Usage: $0 <start_date> <end_date> [<num_threads>] [<existing_articles_dir>] [<locale>]"
+  echo "Example: $0 2024-10-20 2024-10-24 4 /path/to/articles en-US"
   exit 1
 fi
 
