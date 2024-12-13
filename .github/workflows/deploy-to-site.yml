@@ -1,0 +1,72 @@
+name: Deploy to ai-paper-reviewer Site
+
+on: 
+  schedule:
+    - cron: "0 */12 * * *"  # 매 12시간마다 실행
+  workflow_dispatch:  # 수동으로 실행 가능
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository A
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_API_KEY }}
+
+      - name: Setup dependencies and run scripts
+        run: |
+          pip install -r requirements.txt
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils ffmpeg
+          
+          chmod +x ./collect-hf-linux.sh
+          chmod +x ./convert-hf-linux.sh
+          
+          cur_date=$(date '+%Y-%m-%d')
+          echo $cur_date
+          echo "Running collect-hf-linux.sh script..."
+          export GCP_API_KEY=$(gcloud auth print-access-token)
+          
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+          UPSTAGE_API_KEY=${{ secrets.UPSTAGE_API_KEY }} \
+          ./collect-hf-linux.sh $cur_date $cur_date 8 ./output/paper-reviews
+          
+          echo "Running convert-hf-linux.sh script..."
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }} \
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }} \
+          R2_S3_ENDPOINT_URL=${{ secrets.R2_S3_ENDPOINT_URL }} \
+          R2_DOMAIN_NAME=${{ secrets.R2_DOMAIN_NAME }} \
+          ./convert-hf-linux.sh $cur_date $cur_date true
+
+      - name: Checkout Repository B (ai-paper-reviewer)
+        uses: actions/checkout@v3
+        with:
+          repository: 'tikatoka/ai-paper-reviewer'  # 레포지토리 B의 소유자/이름
+          token: ${{ secrets.REPO_B_TOKEN }}  # PAT 시크릿
+          path: 'site'
+
+      - name: Copy Output to Repository B
+        run: |
+          cp -R ./output/paper-reviews/* ./site/specific/folder/  # 'specific/folder'를 레포지토리 B의 원하는 경로로 변경
+          # 예: ./site/_posts/ 또는 ./site/content/paper-reviews/
+
+      - name: Commit and Push to Repository B
+        run: |
+          cd site
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Automated update of ai-paper-reviewer content"
+          git push
