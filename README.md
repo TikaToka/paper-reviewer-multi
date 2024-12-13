@@ -1,6 +1,6 @@
-This work is trying to make paper-reviewer more useful to personal use (curate paper by keyword, multilingual generation)
+This work is trying to make paper-reviewer more useful to personal use
 
-## Todo
+## TODO
 - [ ] support multilingual review
 - [ ] support input: keyword / output: paper reviews related to keyword
 
