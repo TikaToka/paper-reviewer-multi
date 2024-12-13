@@ -4,7 +4,7 @@ import google.generativeai as genai
 from pipeline.utils import prompts
 from configs.gemini_configs import write_script_config
 
-def write_script_first_half(pdf_in_gemini):
+def write_script_first_half(pdf_in_gemini, lang):
     """
     pdf_in_gemini: the pdf file in Gemini
     """
@@ -32,6 +32,9 @@ def write_script_first_half(pdf_in_gemini):
     )
 
     prompt = prompts["write_script"]["first_prompt"]
+    prompt = Template(prompt).substitute(
+        lang=lang,
+    )
     response = chat_session.send_message(prompt)
 
     later_history = [

@@ -1,3 +1,4 @@
+
 import os
 import argparse
 import json
@@ -21,20 +22,61 @@ from pipeline.write_script import write_script
 from pipeline.script_to_speech import script_to_speech
 from pipeline.utils import UploadedFiles
 
+# added
+from arxiv import Result, Client
+import pyquery as pq
+
+def get_arxiv_ids(keyword, start_date, end_date, max_results=10):
+    # arXiv 클라이언트 설정
+    client = Client(page_size=max_results)
+
+    # 검색 결과 가져오기
+    results = client.search(
+        query=keyword,
+        published=(start_date, end_date)
+    )
+
+    # 논문 ID 목록
+    arxiv_ids = [result.entry_id for result in results]
+
+    return arxiv_ids
+
+if __name__ == "__main__":
+    main()
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--arxiv-id', type=str, help='arXiv ID')
+    parser.add_argument('--arxiv-id', type=str, help='arXiv ID') # to be deleted
     parser.add_argument('--workers', type=int, default=10, help='Number of workers')
     parser.add_argument('--use-upstage', action='store_true', help='Use Upstage to extract figures from images')
     parser.add_argument('--stop-at-no-html', action='store_true', help='Stop if no HTML is found')
     parser.add_argument('--known-affiliations-path', type=str, default='configs/known_affiliations.txt', help='Path to known affiliations')
     parser.add_argument('--known-categories-path', type=str, default='configs/known_categories.json', help='Path to known categories')
     parser.add_argument('--voice-synthesis', type=str, default=None, choices=['vertexai', 'local'], help='Voice synthesis service to use')
+    parser.add_argument('--lang', type=str, default='en-US', choices = [
+    'en-US', 'en-GB', 'ko-KR', 'ja-JP', 'zh-CN', 'zh-TW', 'zh-HK', 'zh-SG',
+    'es-ES', 'es-MX', 'es-AR', 'es-CO', 'fr-FR', 'fr-CA', 'de-DE', 'de-AT',
+    'de-CH', 'it-IT', 'pt-PT', 'pt-BR', 'ru-RU', 'ar-SA', 'hi-IN', 'bn-BD',
+    'pa-IN', 'jv-ID', 'vi-VN', 'th-TH', 'tr-TR', 'pl-PL', 'nl-NL', 'sv-SE',
+    'no-NO', 'da-DK', 'fi-FI', 'cs-CZ', 'el-GR', 'he-IL', 'id-ID', 'ms-MY',
+    'ro-RO', 'hu-HU', 'sk-SK', 'uk-UA', 'sr-RS', 'bg-BG', 'hr-HR', 'lt-LT',
+    'lv-LV', 'et-EE', 'sl-SI', 'fa-IR', 'ur-PK', 'ta-IN', 'te-IN', 'ml-IN',
+    'kn-IN', 'mr-IN', 'gu-IN', 'af-ZA', 'sw-KE', 'ta-SG'],
+    help='language to use, use locale') # added
+    # parser.add_argument('--keyword', type=str, help='keyword to curate papers') # to be added
     return parser.parse_args()
 
 async def main(args):
     print(args)
+
+    # curate arxiv papers by keyword
+    # end_date = datetime.today()
+    # start_date = end_date - timedelta(days=7)
+    # arxiv_ids = get_arxiv_ids(keyword, start_date, end_date, max_results)
+    # print(f"Found {len(arxiv_ids)} papers for keyword '{keyword}' between {start_date.date()} and {end_date.date()}:")
     use_html = True
+
+    # for arxiv_id in arxiv_ids:
     root_path = args.arxiv_id
 
     # 1. download pdf
@@ -43,6 +85,8 @@ async def main(args):
 
     with UploadedFiles(pdf_file_path) as uploaded_files:
         pdf_file_in_gemini = uploaded_files[0]
+
+        categories = extract_category(pdf_file_in_gemini, args.known_categories_path)
 
         # 2. convert pdf to images
         print(f"Converting PDF to images")
@@ -121,21 +165,21 @@ async def main(args):
 
         # 7. extract fundamental information from the pdf
         print(f"Extracting essential information from the pdf")
-        essential_info = extract_essentials(pdf_file_in_gemini)
+        essential_info = extract_essentials(pdf_file_in_gemini, args.lang)
 
         # 8. extract affiliation from the pdf
         print(f"Extracting affiliation from the pdf")
         affiliation = extract_affiliation(pdf_file_in_gemini, args.known_affiliations_path)
         essential_info["affiliation"] = affiliation["affiliation"]
 
-        categories = extract_category(pdf_file_in_gemini, args.known_categories_path)
+        # categories = extract_category(pdf_file_in_gemini, args.known_categories_path)
         essential_info["categories"] = categories
 
         if args.voice_synthesis == "vertexai":
             print("Generating podcast")
             print("Writing script")
             raw_script_path = f"{root_path}/raw_script.wav"
-            script = write_script(pdf_file_in_gemini)
+            script = write_script(pdf_file_in_gemini, args.lang)
             with open(raw_script_path, "w", encoding="utf-8") as f:
                 json.dump(script, f)
                 

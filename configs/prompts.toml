@@ -29,6 +29,7 @@ prompt = """based on the paper, give me the following information about the atta
 - if the actual caption is short, provide longer description for better understanding.
 - if the actual caption is long enough, provide short description for better readability.
 - specify the section title of the paper that the $type belongs to.
+- use $lang to answer.
 """
 
 [describe_figure_from_html]
@@ -39,6 +40,7 @@ based on the attached paper, give me the following information about the $type.
 - if the actual caption is short, provide longer description for better understanding.
 - if the actual caption is long enough, provide short description for better readability.
 - specify the section title of the paper that the $type belongs to.
+- use $lang to answer.
 """
 
 [reformat_table]
@@ -94,6 +96,7 @@ Remember to:
 - Focus on the main idea: Prioritize the core contributions and findings of the paper, ensuring that readers can grasp the main idea effectively.
 - Maintain a professional and objective tone: Present the information in a neutral and unbiased manner.
 - Use **bold** to highlight the important parts of the text in the sections "TL;DR" and "Importance to Researchers.
+- Use $lang to answer.
 """
 
 [extract_affiliation]
@@ -151,6 +154,7 @@ Additional context:
 - Welcome the listeners with a super fun overview and keep it really catchy and almost borderline click bait
 - Maintain an approachable tone to appeal to a wide audience, balancing accuracy with clarity.
 - Conclude with a brief summary or takeaway that reflects the research’s impact or next steps in the field.
+- Use $lang to answer.
 
 First, show me the half of the entire conversations.
 the half consists of 10 pairs of conversations.
