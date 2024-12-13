@@ -34,7 +34,7 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
     if grep -Fxq "$id" existing_articles.txt; then
       echo "Skipping $id - already exists";
     else
-      python collect.py --arxiv-id "$id" --stop-at-no-html --voice-synthesis vertexai --lang "$lang";
+      python collect.py --arxiv-id "$id" --stop-at-no-html --lang "$lang";
     fi
   '
   

@@ -10,7 +10,6 @@ fi
 start_date="$1"
 end_date="$2"
 upload_images_r2="$3"
-lang="$4"
 
 if [[ "$upload_images_r2" == "true" ]]; then
   upload_images_r2_flag="--upload-images-r2"
@@ -29,7 +28,7 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
   jq -r '.[].paper.id' daily_papers.json | while read -r id; do
     rm -rf articles/$id
     if [ -d "$id" ]; then
-      python convert.py --arxiv-id $id --hf-daily-papers-date-tag $start_date $upload_images_r2_flag --stop-at-no-html --lang $lang
+      python convert.py --arxiv-id $id --hf-daily-papers-date-tag $start_date $upload_images_r2_flag --stop-at-no-html
     fi  
   done
 

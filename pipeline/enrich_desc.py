@@ -9,7 +9,7 @@ from pipeline.utils import prompts, upload_to_gemini, wait_for_files_active
 
 MODEL_NAME = "gemini-1.5-flash-002"
 
-def ask_gemini_description_from_image(pdf_file_in_gemini, media_path, media_type):
+def ask_gemini_description_from_image(pdf_file_in_gemini, media_path, media_type, lang):
     generation_config = {
         "temperature": 1,
         "top_p": 0.95,
@@ -62,8 +62,8 @@ def ask_gemini_description_from_image(pdf_file_in_gemini, media_path, media_type
     response = chat_session.send_message(prompt)
     return json.loads(response.text)
 
-async def process_figure_and_table(figure_path, pdf_file_in_gemini, pbar, media_type):
-    associated_description = ask_gemini_description_from_image(pdf_file_in_gemini, figure_path, media_type)
+async def process_figure_and_table(figure_path, pdf_file_in_gemini, pbar, media_type, lang):
+    associated_description = ask_gemini_description_from_image(pdf_file_in_gemini, figure_path, media_type, lang)
     pbar.update(1)
     return {
         "figure_path": figure_path,
@@ -72,7 +72,7 @@ async def process_figure_and_table(figure_path, pdf_file_in_gemini, pbar, media_
         "section": associated_description["section"],
     }
 
-async def enrich_description_from_images(media_paths, pdf_file_in_gemini, workers, media_type):
+async def enrich_description_from_images(media_paths, pdf_file_in_gemini, workers, media_type, lang):
     association_results = []
     association_tasks = []
 
@@ -80,7 +80,7 @@ async def enrich_description_from_images(media_paths, pdf_file_in_gemini, worker
     with tqdm(total=len(media_paths)) as pbar:
         async def worker(media_path):
             async with semaphore:
-                return await process_figure_and_table(media_path, pdf_file_in_gemini, pbar, media_type)
+                return await process_figure_and_table(media_path, pdf_file_in_gemini, pbar, media_type, lang)
 
         association_tasks = [worker(media_path) for media_path in media_paths]
         results = await asyncio.gather(*association_tasks)

@@ -1,4 +1,4 @@
-[extract_tables]
+enrich_description_from_html[extract_tables]
 prompt = """Extract tables from the image. Express the tables in Markdown.
 Becareful with the layout of the tables, sometimes they are very complex.
 
@@ -126,7 +126,7 @@ prompt = """Given a PDF research paper as input, generate up to 5 insightful hea
 """
 
 [extract_references]
-prompt = """rom the citations in this paper, identify the top 5 most important reference papers. For each, provide the following information:
+prompt = """From the citations in this paper, identify the top 5 most important reference papers. For each, provide the following information:
 - The name of the first author.
 - The title of the reference paper.
 - Publication date of the reference paper in YYYY-MM-DD format.
@@ -139,6 +139,7 @@ prompt = """Given a PDF research paper as input, analyze and generate comprehens
 - The summary should be written with a thoughtful and in-depth approach to uncover valuable insights.
 - The summary should be written in a single paragraph, and it should be 800 characters long.
 - Use **bold** formatting to emphasize key points.
+- Use $lang to answer.
 """
 
 [write_script]
