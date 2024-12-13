@@ -11,7 +11,12 @@ start_date="$1"
 end_date="$2"
 num_threads="$3"
 existing_articles_dir="$4"
-lang="$5"
+lang="$5"  # Default to 'en-US' if $5 is empty
+
+if [ -z "$lang" ]; then
+  echo "Error: Locale (lang) not provided!"
+  exit 1
+fi
 
 existing_articles=()
 
