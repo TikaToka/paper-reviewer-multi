@@ -25,11 +25,14 @@ echo "$lang"
 
 existing_articles=()
 
-if [ -n "$existing_articles_dir" ]; then
-  existing_articles=$(ls -d $existing_articles_dir/*/ | xargs -I {} basename {})
+if [ -n "$existing_articles_dir" ] && [ -d "$existing_articles_dir" ]; then
+  existing_articles=$(find "$existing_articles_dir" -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)
+  echo "$existing_articles" | tr ' ' '\n' > existing_articles.txt
+else
+  echo "Directory $existing_articles_dir does not exist or is empty."
+  > existing_articles.txt  # 빈 파일 생성
 fi
 
-echo "$existing_articles" | tr ' ' '\n' > existing_articles.txt
 
 # Loop through the date range
 while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
