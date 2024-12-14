@@ -45,9 +45,10 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
     if grep -Fxq "$id" existing_articles.txt; then
       echo "Skipping $id - already exists";
     else
-      python collect.py --arxiv-id "$id" --stop-at-no-html --lang "$lang";
+      echo "Execute collect.py for ID: $id with lang: $0"
+      python collect.py --arxiv-id "$id" --stop-at-no-html --lang "$0";
     fi
-  '
+  ' "$lang"
   
   # Increment the date (Linux compatible)
   start_date=$(date -d "$start_date + 1 day" +%Y-%m-%d)
