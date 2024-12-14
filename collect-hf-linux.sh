@@ -45,7 +45,7 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
   jq -r '.[].paper.id' daily_papers.json | tee paper_ids_$start_date.log
 
   # Process each paper in parallel
-  jq -r '.[].paper.id' daily_papers.json | xargs -I '{}' -P 8 sh -c '
+  jq -r '.[].paper.id' daily_papers.json | xargs -I '{}' -P "$num_threads" sh -c '
     id={};
     rm -rf "$id";
     if grep -Fxq "$id" existing_articles.txt; then
@@ -58,6 +58,7 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
         exit 1
       }
       echo "Finished collect.py for ID: $id"
+      sleep 60
     fi
   ' "$lang"
 
