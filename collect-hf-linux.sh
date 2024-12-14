@@ -40,17 +40,28 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
   # Fetch the list of papers for the current date
   curl "https://huggingface.co/api/daily_papers?date=$start_date" -o daily_papers.json
 
-  jq -r '.[].paper.id' daily_papers.json | xargs -I {} -P "$num_threads" sh -c '
+  # Log fetched paper IDs for verification
+  echo "Fetched paper IDs for $start_date:"
+  jq -r '.[].paper.id' daily_papers.json | tee paper_ids_$start_date.log
+
+  # Process each paper in parallel
+  jq -r '.[].paper.id' daily_papers.json | xargs -I '{}' -P 8 sh -c '
     id={};
     rm -rf "$id";
     if grep -Fxq "$id" existing_articles.txt; then
       echo "Skipping $id - already exists";
     else
-      echo "Execute collect.py for ID: $id with lang: $0"
-      python collect.py --arxiv-id "$id" --stop-at-no-html --lang "$0";
+      echo "Starting collect.py for ID: $id with lang: $0"
+      python collect.py --arxiv-id "$id" --stop-at-no-html --lang "$0" > "$id.log" 2>&1 || {
+        echo "Error running collect.py for ID: $id. Check $id.log for details." >&2
+        cat "$id.log" >&2
+        exit 1
+      }
+      echo "Finished collect.py for ID: $id"
     fi
   ' "$lang"
-  
+
   # Increment the date (Linux compatible)
   start_date=$(date -d "$start_date + 1 day" +%Y-%m-%d)
 done
+
