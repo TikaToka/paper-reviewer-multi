@@ -33,7 +33,7 @@ echo "$existing_articles" | tr ' ' '\n' > existing_articles.txt
 
 
 # Loop through the date range
-while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]  ]; do
+while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
   echo "Processing papers for $start_date"
 
   # Fetch the list of papers for the current date
