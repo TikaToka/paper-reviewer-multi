@@ -23,23 +23,23 @@ from pipeline.script_to_speech import script_to_speech
 from pipeline.utils import UploadedFiles
 
 # added
-from arxiv import Result, Client
-import pyquery as pq
+# from arxiv import Result, Client
+# import pyquery as pq
 
-def get_arxiv_ids(keyword, start_date, end_date, max_results=10):
-    # arXiv 클라이언트 설정
-    client = Client(page_size=max_results)
+# def get_arxiv_ids(keyword, start_date, end_date, max_results=10):
+#     # arXiv 클라이언트 설정
+#     client = Client(page_size=max_results)
 
-    # 검색 결과 가져오기
-    results = client.search(
-        query=keyword,
-        published=(start_date, end_date)
-    )
+#     # 검색 결과 가져오기
+#     results = client.search(
+#         query=keyword,
+#         published=(start_date, end_date)
+#     )
 
-    # 논문 ID 목록
-    arxiv_ids = [result.entry_id for result in results]
+#     # 논문 ID 목록
+#     arxiv_ids = [result.entry_id for result in results]
 
-    return arxiv_ids
+#     return arxiv_ids
 
 
 def parse_args():
