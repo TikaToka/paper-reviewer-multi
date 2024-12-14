@@ -20,9 +20,6 @@ if [ -z "$lang" ]; then
 fi
 
 echo "$lang"
-echo "$lang"
-echo "$lang"
-
 
 existing_articles=()
 
@@ -45,18 +42,15 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
   jq -r '.[].paper.id' daily_papers.json | tee paper_ids_$start_date.log
 
   # Process each paper in parallel
-  jq -r '.[].paper.id' daily_papers.json | xargs -I '{}' -P "$num_threads" sh -c '
+  # add '--voice-synthesis vertexai' at L53 if needed
+  jq -r '.[].paper.id' daily_papers.json | xargs -I {} -P "$num_threads" sh -c '
     id={};
     rm -rf "$id";
     if grep -Fxq "$id" existing_articles.txt; then
       echo "Skipping $id - already exists";
     else
       echo "Starting collect.py for ID: $id with lang: $0"
-      python collect.py --arxiv-id "$id" --stop-at-no-html --lang "$0" > "$id.log" 2>&1 || {
-        echo "Error running collect.py for ID: $id. Check $id.log for details." >&2
-        cat "$id.log" >&2
-        exit 1
-      }
+      python collect.py --arxiv-id "$id" --stop-at-no-html --lang "$0";  
       echo "Finished collect.py for ID: $id"
       sleep 60
     fi
