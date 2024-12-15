@@ -43,7 +43,7 @@ while [[ $(date -d "$start_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
 
   # Process each paper in parallel
   # add '--voice-synthesis vertexai' at L53 if needed
-  jq -r '.[].paper.id' daily_papers.json | xargs -I {} -P "$num_threads" sh -c '
+  jq -r '.[].paper.id' daily_papers.json | head -n 5 |xargs -I {} -P "$num_threads" sh -c '
     id={};
     rm -rf "$id";
     if grep -Fxq "$id" existing_articles.txt; then
