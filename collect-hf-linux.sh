@@ -1,5 +1,4 @@
 #!/bin/bash
-set -xe
 
 # Check if two arguments are provided
 if [ $# -lt 2 ] || [ $# -gt 5 ]; then
